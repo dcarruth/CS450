@@ -1,8 +1,9 @@
 from sklearn import datasets
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-from sklearn.neighbors import KNeighborsClassifier
+from sklearn.neighbors import KNeighborsClassifier, KDTree
 import math
+import numpy as np
 
 def main(argv):
     iris = datasets.load_iris()
@@ -33,11 +34,19 @@ def main(argv):
     newModel = newClassifier.fit(irisTrain, targetTrain)
     newPrediction = newModel.predict(irisTest)
     
+    #Create KD Tree and test again
+    tree = KDTree(newIrisTrain,leaf_size=5)
+    KDpredictions = kNN().fit(newIrisTrain, targetTrain)
+    KDpredictions2 = KDpredictions.kd(tree, newIrisTest)
+    
     print ("My algorithm")    
     display(prediction, targetTest)
 
     print ("Off the shelf algorithm")
     display(newPrediction, targetTest)
+    
+    print ("KD Tree")
+    display(KDpredictions2, targetTest)
     
 #Display the accuracy of the kNN algorithm
 def display(prediction, targetTest):
@@ -55,11 +64,23 @@ class kNN:
     def fit(self, data, targets):
         mod = nearest_neighbors(data, targets)
         return mod
-        
+    
 class nearest_neighbors:
     def __init__(self, training = [], targets = []):
         self.irisT = training
         self.irisTar = targets
+    def kd(self,tree, data):
+        KDpred = []
+        res = []
+        dist, ind = tree.query(data[:1],k=5)
+        print (dist, "   " , ind)
+        for test in data:
+            for num in ind:
+                KDpred.append(self.irisTar[num])
+            counts = np.bincount(KDpred[0])
+            res.append(np.argmax(counts)) 
+            KDpred.clear()
+        return res
     def predict(self, data, k):
         #Prepare 3 arrays 
         results = []
