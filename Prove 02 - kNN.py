@@ -113,12 +113,10 @@ class nearest_neighbors:
                 #k allows for it.
                 results[ind] = max(results)
                 temp = temp + 1
-            #Take the average of all the k_array elements to average
-            #the results of the k nearest neighbors 
-            avg = sum(k_array) / len(k_array)
-            #Add the average to the predictions array as the guess for 
-            #the classification of the data
-            predictions.append(round(avg,0))
+            #Find most common number and append to results 
+            print (k_array)           
+            counts = np.bincount(k_array)
+            predictions.append(np.argmax(counts)) 
             k_array.clear()
             temp = 0
             results.clear()
